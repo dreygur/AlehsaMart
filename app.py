@@ -146,15 +146,16 @@ def checkout() -> None:
 def main() -> None:
   if login():
     print(f'[+] LOGIN SUCCESSFULL!')
-    while True:
-      for bike in search_bikes(__bike_brand_id):
-        if int(bike.get('off')[:-1]) >= __expected_off and buy(bike.get('link')):
-          print(f'[+] Trying to buy: {bike.get("name")}')
-          if checkout():
-            print(f'[+] {bike.get("name")} buy: SUCCESS!')
-          else:
-            print(f'[+] {bike.get("name")} buy: FAILED!')
-
+    try:
+      while True:
+        for bike in search_bikes(__bike_brand_id):
+          if int(bike.get('off')[:-1]) >= __expected_off and buy(bike.get('link')):
+            print(f'[+] Trying to buy: {bike.get("name")}')
+            if checkout():
+              print(f'[+] {bike.get("name")} buy: SUCCESS!')
+            else:
+              print(f'[+] {bike.get("name")} buy: FAILED!')
+    except: pass
 
 if __name__ == '__main__':
   # https://aleshamart.com/carts
