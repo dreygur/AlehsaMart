@@ -120,7 +120,7 @@ def checkout() -> None:
     'payable_total_amount': '0',
     'note': '',
     'shipping_cost': '0',
-    'discount_amount': '0',
+    'discount_amount': '50000',
     'is_flat_shipping': '0',
     'appliedDiscountIdsWithAmount': 'a: 0: {}'
   }
@@ -137,12 +137,15 @@ def checkout() -> None:
 
 def main() -> None:
   if login():
+    print(f'[+] LOGIN SUCCESSFULL!')
     while True:
       for bike in search_bikes(__bike_brand_id):
         if int(bike.get('off')[:-1]) > 20 and buy(bike.get('link')):
           print(f'[+] Trying to buy: {bike.get("name")}')
           if checkout():
-              print(print(f'[+] {bike.get("name")} buy: SUCCESS!'))
+            print(f'[+] {bike.get("name")} buy: SUCCESS!')
+          else:
+            print(f'[+] {bike.get("name")} buy: FAILED!')
 
 
 if __name__ == '__main__':
