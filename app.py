@@ -10,20 +10,22 @@ from bs4 import BeautifulSoup
 from random_user_agent.user_agent import UserAgent
 from random_user_agent.params import SoftwareName, OperatingSystem
 
-# Base URL
-__base = 'https://aleshamart.com/'
+from creds import *
 
 # Login Details
-__username = '01511085250'
-__password = '@eikg7mMWDRFsA8'
+__username = username
+__password = password
 
 # Hacks
-__expected_off = 20
-__bike_brand_id = 42
-__expected_discount = 70000
+__expected_off = expected_off
+__bike_brand_id = bike_brand_id
+__expected_discount = expected_discount
 
 # User Session
 __session = rq.Session()
+
+# Base URL
+__base = 'https://aleshamart.com/'
 
 def user_agent() -> str:
     software_names = [SoftwareName.CHROME.value]
