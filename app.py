@@ -12,8 +12,8 @@ from random_user_agent.params import SoftwareName, OperatingSystem
 
 # Base URL
 __base = 'https://aleshamart.com/'
-__username = 'rakib'
-__password = 'rakib'
+__username = '01511085250'
+__password = '@eikg7mMWDRFsA8'
 __bike_brand_id = 42
 
 # User Session
@@ -32,14 +32,15 @@ def user_agent() -> str:
 
 def token(page: str=None) -> str:
   if page:
-    res = rq.get(page, headers={'user-agent': user_agent()})
-  res = rq.get(__base, headers={'user-agent': user_agent()})
+    res = __session.get(page, headers={'user-agent': user_agent()})
+  else:
+    res = rq.get(__base, headers={'user-agent': user_agent()})
   pattern = re.compile(r'c.{8}n\"\s.{8}\"([A-z0-9_]{10,})\"')
   matches = pattern.findall(res.text)
   if len(matches) > 0:
     return matches[0]
 
-def cookie() -> str:
+def login() -> str:
   # https://aleshamart.com/login
   csrf_token = token('https://aleshamart.com/login')
   data = {
@@ -48,14 +49,16 @@ def cookie() -> str:
     'password': __password,
   }
 
-  res = rq.post(__base + 'loginsubmit', data=data, headers={
+  res = __session.post(__base + 'loginsubmit', data=data, headers={
     'user-agent': user_agent(),
     'origin': 'https://aleshamart.com',
     'referer': 'https://aleshamart.com/login',
-    'X-CSRF-TOKEN': csrf_token
+    'X-CSRF-TOKEN': csrf_token,
+    'x-requested-with': 'XMLHttpRequest'
   })
-  print(res.status_code)
-  print(res.request.body)
+
+  if res.url == 'https://aleshamart.com/account':
+    return 'SUCCESS'
 
 def search_bikes(brand: str) -> list:
   # All found Bikes
@@ -80,30 +83,69 @@ def search_bikes(brand: str) -> list:
   # print(bikes)
   return bikes
 
-def buy(link: str) -> None:
+def buy(link: str) -> str:
   product_id = link.split('/')[4]
   cart_url = 'https://aleshamart.com/carts/addtocart/' + product_id
+  csrf_token = token(link)
 
   data = {
     '_method': 'PATCH',
-    '_token': token(),
+    '_token': csrf_token,
     'quantity': '1',
     'variation_id': '0',
     'usedattributes': '',
     'buy_now': 'buy_now'
   }
 
-  print(product_id)
+  res = __session.post(cart_url, data=data, headers={
+    'user-agent': user_agent(),
+    'origin': 'https://aleshamart.com',
+    'referer': link,
+    'X-CSRF-TOKEN': csrf_token,
+  })
+
+  if res.status_code == 200:
+    return 'SUCCESS'
+
+def checkout() -> None:
+  link = 'https://aleshamart.com/quickcheckout'
+  csrf_token = token(link)
+
+  data = {
+    '_token': csrf_token,
+    'billing': '249460',
+    'shipping': '249460',
+    'sameasbilling': '1',
+    'payment_method': '2',
+    'payable_total_amount': '0',
+    'note': '',
+    'shipping_cost': '0',
+    'discount_amount': '0',
+    'is_flat_shipping': '0',
+    'appliedDiscountIdsWithAmount': 'a: 0: {}'
+  }
+
+  res = __session.post(link, data=data, headers={
+    'user-agent': user_agent(),
+    'origin': 'https://aleshamart.com',
+    'referer': link,
+    'X-CSRF-TOKEN': csrf_token,
+  })
+
+  if res.status_code == 200:
+    return 'SUCCESS'
 
 def main() -> None:
-  # token()
-  # print(search_bikes(__bike_brand_id))
-  cookie()
-  # for bike in search_bikes(__bike_brand_id):
-  #   buy(bike.get('link'))
-  #   if int(bike.get('off')[:-1]) > 15:
-  #     buy(bike.get('link'))
+  if login():
+    while True:
+      for bike in search_bikes(__bike_brand_id):
+        if int(bike.get('off')[:-1]) > 20 and buy(bike.get('link')):
+          print(f'[+] Trying to buy: {bike.get("name")}')
+          if checkout():
+              print(print(f'[+] {bike.get("name")} buy: SUCCESS!'))
 
 
 if __name__ == '__main__':
+  # https://aleshamart.com/carts
+  # https://aleshamart.com/checkout
   main()
