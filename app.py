@@ -3,6 +3,7 @@
 import os
 import re
 import sys
+import dotenv
 import requests as rq
 from bs4 import BeautifulSoup
 
@@ -10,16 +11,16 @@ from bs4 import BeautifulSoup
 from random_user_agent.user_agent import UserAgent
 from random_user_agent.params import SoftwareName, OperatingSystem
 
-from creds import *
+dotenv.load_dotenv()
 
 # Login Details
-__username = username
-__password = password
+__username = os.getenv('USERNAME')
+__password = os.getenv('PASSWORD')
 
 # Hacks
-__expected_off = expected_off
-__bike_brand_id = bike_brand_id
-__expected_discount = expected_discount
+__expected_off = os.getenv('EXPECTED_OFF')
+__bike_brand_id = os.getenv('BRAND_ID')
+# __expected_discount = os.getenv('DISCOUNT')
 
 # User Session
 __session = rq.Session()
@@ -128,7 +129,7 @@ def checkout() -> None:
     'payable_total_amount': '0',
     'note': '',
     'shipping_cost': '0',
-    'discount_amount': str(__expected_discount),
+    'discount_amount': '',
     'is_flat_shipping': '0',
     'appliedDiscountIdsWithAmount': 'a: 0: {}'
   }
