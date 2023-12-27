@@ -29,15 +29,15 @@ __session = rq.Session()
 __base = 'https://aleshamart.com/'
 
 def user_agent() -> str:
-    software_names = [SoftwareName.CHROME.value]
-    operating_systems = [OperatingSystem.WINDOWS.value, OperatingSystem.LINUX.value]
+  software_names = [SoftwareName.CHROME.value]
+  operating_systems = [OperatingSystem.WINDOWS.value, OperatingSystem.LINUX.value]
 
-    user_agent_rotator = UserAgent(software_names=software_names, operating_systems=operating_systems, limit=100)
+  user_agent_rotator = UserAgent(software_names=software_names, operating_systems=operating_systems, limit=100)
 
-    # Get Random User Agent String.
-    agent = user_agent_rotator.get_random_user_agent()
+  # Get Random User Agent String.
+  agent = user_agent_rotator.get_random_user_agent()
 
-    return agent
+  return agent
 
 def token(page: str=None) -> str:
   if page:
